@@ -1,0 +1,70 @@
+﻿html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Evita scroll horizontal accidental */
+}
+
+.hero-banner {
+    background-color: #1a237e;
+    background-image: url('img/finanzas.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 70vh;
+    width: 100vw; /* Ocupa el 100% del ancho de la ventana */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    display: flex;
+    align-items: center;
+}
+.hero-banner-simple {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.hero-banner h1 {
+    color: #ffffff !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-banner p {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+/* Capa oscura para que el texto resalte */
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    width: 100vw;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Iconos de características */
+/*No lo borrei*/
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
