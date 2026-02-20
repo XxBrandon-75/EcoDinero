@@ -1,0 +1,40 @@
+﻿/* Grid de categorías */
+.category-card {
+    border: 1px solid #edf2f7;
+    border-radius: 18px;
+    padding: 2rem 1rem;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+    .category-card:hover {
+        border-color: #3f51b5;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        transform: scale(1.02);
+    }
+
+/* Icono de la categoría */
+.category-icon {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    margin: 0 auto 1rem;
+    background: #f1f5f9;
+    border-radius: 50%;
+    color: #1a237e;
+}
+
+/* Tarjeta para "Añadir Nueva" */
+.add-category-btn {
+    border: 2px dashed #cbd5e0;
+    background: transparent;
+    cursor: pointer;
+    color: #a0aec0;
+}
+
+    .add-category-btn:hover {
+        border-color: #1a237e;
+        color: #1a237e;
+        background: #f8fafc;
+    }
