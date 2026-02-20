@@ -1,0 +1,47 @@
+﻿
+/* Contenedor principal de la lista */
+.transaction-list {
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+}
+
+/* Cada fila de transacción */
+.transaction-item {
+    padding: 1.25rem;
+    border-left: 5px solid transparent;
+    transition: all 0.2s ease;
+}
+
+    .transaction-item:hover {
+        background-color: #f8f9fa;
+        border-left-color: #1a237e;
+    }
+
+/* Círculo del icono */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.2rem;
+}
+
+/* Colores de estado */
+.bg-light-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.bg-light-danger {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+/* Tipografía de montos */
+.amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+}

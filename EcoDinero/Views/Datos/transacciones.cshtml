@@ -1,0 +1,104 @@
+﻿@{
+    ViewBag.Title = "Transacciones";
+}
+
+@section styles {
+    <link href="~/Content/transacciones.css" rel="stylesheet" />
+}
+@*Transacciones segun lo veas sera lo mismo que categorias pero ojo primero van categorias y luego transacciones porque estas de cierto modo dependen 
+    de las categorias para aparecer algo como el de cruz roja, donde primero se definia una plantilla y ya luego le aparece al usuario para que diga de
+    que fue su gasto*@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Mis Movimientos</h2>
+            <p class="text-muted">Gestiona tus ingresos y gastos recientes</p>
+        </div>
+        <button class="btn btn-success shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalGasto">
+            <i class="fas fa-plus me-2"></i>Nuevo Gasto
+        </button>
+    </div>
+ 
+    <div class="card shadow-sm border-0 transaction-list">
+        <div class="list-group list-group-flush">
+
+            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-light-danger me-3">
+                        <i class="fas fa-hamburger"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Birria</h6>
+                        <small class="text-muted">Hoy, 2:30 PM • Comida</small>
+                    </div>
+                </div>
+                <span class="amount text-danger">-$15.50</span>
+            </div>
+
+            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-light-success me-3">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Cariñosas</h6>
+                        <small class="text-muted">Ayer • Sueldo</small>
+                    </div>
+                </div>
+                <span class="amount text-success">+$1,200.00</span>
+            </div>
+
+            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-light-danger me-3">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Polvos mágicos</h6>
+                        <small class="text-muted">18 Feb, 9:00 AM • Transporte</small>
+                    </div>
+                </div>
+                <span class="amount text-danger">-$45.00</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGasto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold">Registrar Movimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" class="form-control" placeholder="¿En qué gastaste?">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Monto</label>
+                            <input type="number" class="form-control" placeholder="0.00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select">
+                                <option selected>Seleccionar...</option>
+                                <option>Comida</option>
+                                <option>Sueldo</option>
+                                <option>Transporte</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success px-4">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
