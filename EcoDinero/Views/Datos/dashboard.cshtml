@@ -1,21 +1,32 @@
-﻿
-@{
-    ViewBag.Title = "dashboard";
+﻿@{
+    ViewBag.Title = "Dashboard";
 }
 
 @section styles {
     <link href="~/Content/dashboard.css" rel="stylesheet" />
 }
-<h2>Me gusta la de cabello cobrizo o no me acuerdo la neta pero si me gusta pero pato me la cebo ese dia, si te acuerdas we?</h2>
-@*Aqui ta mas facil porque solo es mandar a llamar a la base (que te recuerdo que no hay vea) y te muestra el presupuesto que esta relacionado con el usuario
-    pero pues no hay base vea*@
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-danger text-white p-3 mb-4">
+                <h6>Total Gastado</h6>
+                <h3>$@string.Format("{0:N2}", ViewBag.TotalGastado)</h3>
+                <small>en gastos registrados</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 bg-success text-white p-3 mb-4">
+                <h6>Total Ingresado</h6>
+                <h3>$@string.Format("{0:N2}", ViewBag.TotalIngresado)</h3>
+                <small>en ingresos registrados</small>
+            </div>
+        </div>
+        <div class="col-md-3">
             <div class="card shadow-sm border-0 bg-primary text-white p-3 mb-4">
-                <h6>Presupuesto Mensual</h6>
-                <h3>$5,000.00</h3>
-                <small>Restante: $1,200.00</small>
+                <h6>Categorías</h6>
+                <h3>@ViewBag.TotalCategorias</h3>
+                <small>categorías creadas</small>
             </div>
         </div>
     </div>
@@ -23,30 +34,67 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card shadow-sm border-0 p-4 mb-4">
-                <h5 class="fw-bold mb-3"><i class="fas fa-chart-area me-2"></i>Flujo de Gastos (Últimos 7 días)</h5>
-                <canvas id="lineChart" height="100"></canvas>
+                <h5 class="fw-bold mb-3"><i class="fas fa-chart-area me-2 text-danger"></i>Flujo de Gastos (Últimos 7 días)</h5>
+                <canvas id="lineChartGastos" height="100"></canvas>
+            </div>
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-chart-area me-2 text-success"></i>Flujo de Ingresos (Últimos 7 días)</h5>
+                <canvas id="lineChartIngresos" height="100"></canvas>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card shadow-sm border-0 p-4 mb-4">
-                <h5 class="fw-bold mb-3">Distribución</h5>
+                <h5 class="fw-bold mb-3">Distribución por categoría</h5>
                 <canvas id="pieChart"></canvas>
             </div>
         </div>
     </div>
 </div>
-@*Aqui no te apantallei porque este me lo dio chat para rellenar pero no le hagas mucho caso es solo un script que la funcion es demostrar como van las estadisticas
-    del usuario que tambien en funcion se tienen que relacionar con la base*@
+
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Configuración rápida de gráficos con datos "falsos" para tu equipo
-        const ctxLine = document.getElementById('lineChart');
-        new Chart(ctxLine, {
+        // Línea — gastos últimos 7 días
+        new Chart(document.getElementById('lineChartGastos'), {
             type: 'line',
             data: {
-                labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
-                datasets: [{ label: 'Gastos', data: [120, 190, 300, 50, 200, 300, 450], borderColor: '#1a237e', tension: 0.4 }]
+                labels: @Html.Raw(ViewBag.LabelsLinea),
+                datasets: [{
+                    label: 'Gastos',
+                    data: @Html.Raw(ViewBag.DatosLinea),
+                    borderColor: '#e53935',
+                    backgroundColor: 'rgba(229,57,53,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        });
+
+        // Línea — ingresos últimos 7 días
+        new Chart(document.getElementById('lineChartIngresos'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(ViewBag.LabelsLinea),
+                datasets: [{
+                    label: 'Ingresos',
+                    data: @Html.Raw(ViewBag.DatosLineaIngresos),
+                    borderColor: '#43a047',
+                    backgroundColor: 'rgba(67,160,71,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        });
+
+        // Pie — distribución por categoría
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(ViewBag.LabelsPie),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.DatosPie),
+                    backgroundColor: ['#1a237e','#e53935','#43a047','#fb8c00','#8e24aa','#00acc1','#f4511e','#6d4c41']
+                }]
             }
         });
     </script>

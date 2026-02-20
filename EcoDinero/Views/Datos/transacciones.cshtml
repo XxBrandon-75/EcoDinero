@@ -1,104 +1,154 @@
-﻿@{
+﻿@model List<EcoDinero.Models.Transaccion>
+@{
     ViewBag.Title = "Transacciones";
+    var categoriasGasto   = ViewBag.CategoriasGasto   as List<EcoDinero.Models.Categoria>;
+    var categoriasIngreso = ViewBag.CategoriasIngreso as List<EcoDinero.Models.Categoria>;
 }
 
 @section styles {
     <link href="~/Content/transacciones.css" rel="stylesheet" />
 }
-@*Transacciones segun lo veas sera lo mismo que categorias pero ojo primero van categorias y luego transacciones porque estas de cierto modo dependen 
-    de las categorias para aparecer algo como el de cruz roja, donde primero se definia una plantilla y ya luego le aparece al usuario para que diga de
-    que fue su gasto*@
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-0">Mis Movimientos</h2>
             <p class="text-muted">Gestiona tus ingresos y gastos recientes</p>
         </div>
-        <button class="btn btn-success shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalGasto">
-            <i class="fas fa-plus me-2"></i>Nuevo Gasto
-        </button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-danger shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalGasto">
+                <i class="fas fa-arrow-down me-2"></i>Nuevo Gasto
+            </button>
+            <button class="btn btn-success shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalIngreso">
+                <i class="fas fa-arrow-up me-2"></i>Nuevo Ingreso
+            </button>
+        </div>
     </div>
- 
+
     <div class="card shadow-sm border-0 transaction-list">
         <div class="list-group list-group-flush">
-
-            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box bg-light-danger me-3">
-                        <i class="fas fa-hamburger"></i>
+            @foreach (var trans in Model)
+            {
+                <div class="list-group-item transaction-item d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box @(trans.Tipo == "Ingreso" ? "bg-success" : "bg-danger") bg-opacity-10 me-3 rounded-circle p-2">
+                            <i class="fas @(trans.Categoria != null ? trans.Categoria.Icono : "fa-tag") @(trans.Tipo == "Ingreso" ? "text-success" : "text-danger")"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">@trans.Descripcion</h6>
+                            <small class="text-muted">
+                                @trans.Fecha.ToString("dd MMM yyyy, hh:mm tt") •
+                                @(trans.Categoria != null ? trans.Categoria.Nombre : "Sin categoría")
+                            </small>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold">Birria</h6>
-                        <small class="text-muted">Hoy, 2:30 PM • Comida</small>
-                    </div>
-                </div>
-                <span class="amount text-danger">-$15.50</span>
-            </div>
-
-            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box bg-light-success me-3">
-                        <i class="fas fa-money-check-alt"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold">Cariñosas</h6>
-                        <small class="text-muted">Ayer • Sueldo</small>
-                    </div>
-                </div>
-                <span class="amount text-success">+$1,200.00</span>
-            </div>
-
-            <div class="list-group-item transaction-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box bg-light-danger me-3">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold">Polvos mágicos</h6>
-                        <small class="text-muted">18 Feb, 9:00 AM • Transporte</small>
+                    <div class="d-flex align-items-center gap-3">
+                        @if (trans.Tipo == "Ingreso")
+                        {
+                            <span class="fw-bold text-success fs-6">+$@trans.Monto.ToString("N2")</span>
+                        }
+                        else
+                        {
+                            <span class="fw-bold text-danger fs-6">-$@trans.Monto.ToString("N2")</span>
+                        }
+                        @using (Html.BeginForm("EliminarTransaccion", "Datos", FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("id", trans.Id)
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('¿Eliminar @trans.Descripcion?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        }
                     </div>
                 </div>
-                <span class="amount text-danger">-$45.00</span>
-            </div>
-
+            }
         </div>
     </div>
 </div>
 
+@* Modal Nuevo Gasto *@
 <div class="modal fade" id="modalGasto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header border-bottom-0">
-                <h5 class="modal-title fw-bold">Registrar Movimiento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header border-bottom-0 bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="fas fa-arrow-down me-2"></i>Registrar Gasto</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form>
+            @using (Html.BeginForm("CrearTransaccion", "Datos", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Tipo" value="Gasto" />
+                <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Descripción</label>
-                        <input type="text" class="form-control" placeholder="¿En qué gastaste?">
+                        <input type="text" name="Descripcion" class="form-control" placeholder="¿En qué gastaste?" required />
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Monto</label>
-                            <input type="number" class="form-control" placeholder="0.00">
+                            <input type="number" name="Monto" step="0.01" class="form-control" placeholder="0.00" required />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Categoría</label>
-                            <select class="form-select">
-                                <option selected>Seleccionar...</option>
-                                <option>Comida</option>
-                                <option>Sueldo</option>
-                                <option>Transporte</option>
+                            <select name="CategoriaId" class="form-select" required>
+                                <option value="">Seleccionar...</option>
+                                @foreach (var cat in categoriasGasto)
+                                {
+                                    <option value="@cat.Id">@cat.Nombre</option>
+                                }
                             </select>
                         </div>
                     </div>
-                </form>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger px-4">Guardar Gasto</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* Modal Nuevo Ingreso *@
+<div class="modal fade" id="modalIngreso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="fas fa-arrow-up me-2"></i>Registrar Ingreso</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success px-4">Guardar</button>
-            </div>
+            @using (Html.BeginForm("CrearTransaccion", "Datos", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Tipo" value="Ingreso" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" name="Descripcion" class="form-control" placeholder="¿De dónde viene el ingreso?" required />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Monto</label>
+                            <input type="number" name="Monto" step="0.01" class="form-control" placeholder="0.00" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select name="CategoriaId" class="form-select" required>
+                                <option value="">Seleccionar...</option>
+                                @foreach (var cat in categoriasIngreso)
+                                {
+                                    <option value="@cat.Id">@cat.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success px-4">Guardar Ingreso</button>
+                </div>
+            }
         </div>
     </div>
 </div>

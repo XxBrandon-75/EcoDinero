@@ -1,12 +1,22 @@
-﻿@{
+﻿@model List<EcoDinero.Models.Categoria>
+
+@{
     ViewBag.Title = "Categorías";
+    var gastos   = Model.Where(c => c.Tipo == "Gasto").ToList();
+    var ingresos = Model.Where(c => c.Tipo == "Ingreso").ToList();
 }
 
 @section styles {
     <link href="~/Content/categorias.css" rel="stylesheet" />
 }
-@*Esta vista si ya empieza lo feo porque se tiene que hacer uso de la base para que se puedan agregar nuevas categorias que el usuario crea necesarias para llevar
-    a cabo su administracion*@
+
+@* Form oculto reutilizable para eliminar — un solo token en toda la página *@
+@using (Html.BeginForm("EliminarCategoria", "Datos", FormMethod.Post, new { id = "formEliminar" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="eliminarId" />
+}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -15,87 +25,229 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="category-card shadow-sm border-0">
-                <div class="category-icon bg-light text-warning">
-                    <i class="fas fa-utensils fa-2x"></i>
-                </div>
-                <h5 class="fw-bold mb-1">Comida</h5>
-                <p class="text-muted small mb-3">12 transacciones</p>
-                <div class="btn-group w-100">
-                    <button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-outline-danger border-0"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="category-card shadow-sm border-0">
-                <div class="category-icon bg-light text-primary">
-                    <i class="fas fa-car fa-2x"></i>
-                </div>
-                <h5 class="fw-bold mb-1">Transporte</h5>
-                <p class="text-muted small mb-3">5 transacciones</p>
-                <div class="btn-group w-100">
-                    <button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-outline-danger border-0"><i class="fas fa-trash"></i></button>
+    @* Categorías de Gasto *@
+    <h5 class="fw-bold text-danger mb-3"><i class="fas fa-arrow-down me-2"></i>Gastos</h5>
+    <div class="row g-4 mb-4">
+        @foreach (var cat in gastos)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="category-card shadow-sm border-0">
+                    <div class="category-icon bg-light text-danger">
+                        <i class="fas @cat.Icono fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">@cat.Nombre</h5>
+                    <div class="btn-group w-100 mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary border-0"
+                                data-bs-toggle="modal" data-bs-target="#modalEditar"
+                                data-id="@cat.Id" data-nombre="@cat.Nombre"
+                                data-icono="@cat.Icono" data-tipo="@cat.Tipo">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger border-0"
+                                onclick="confirmarEliminar(@cat.Id, '@cat.Nombre')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        }
         <div class="col-md-3 col-sm-6">
-            <div class="category-card shadow-sm border-0">
-                <div class="category-icon bg-light text-info">
-                    <i class="fas fa-gamepad fa-2x"></i>
-                </div>
-                <h5 class="fw-bold mb-1">Ocio</h5>
-                <p class="text-muted small mb-3">3 transacciones</p>
-                <div class="btn-group w-100">
-                    <button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-outline-danger border-0"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="category-card add-category-btn h-100 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCategoria">
+            <div class="category-card add-category-btn h-100 shadow-sm"
+                 data-bs-toggle="modal" data-bs-target="#modalCategoria"
+                 data-tipo="Gasto">
                 <i class="fas fa-plus-circle fa-3x mb-3"></i>
                 <h5 class="fw-bold">Nueva</h5>
-                <p class="small">Agregar etiqueta</p>
+                <p class="small">Agregar gasto</p>
+            </div>
+        </div>
+    </div>
+
+    @* Categorías de Ingreso *@
+    <h5 class="fw-bold text-success mb-3"><i class="fas fa-arrow-up me-2"></i>Ingresos</h5>
+    <div class="row g-4">
+        @foreach (var cat in ingresos)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="category-card shadow-sm border-0">
+                    <div class="category-icon bg-light text-success">
+                        <i class="fas @cat.Icono fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">@cat.Nombre</h5>
+                    <div class="btn-group w-100 mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-secondary border-0"
+                                data-bs-toggle="modal" data-bs-target="#modalEditar"
+                                data-id="@cat.Id" data-nombre="@cat.Nombre"
+                                data-icono="@cat.Icono" data-tipo="@cat.Tipo">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger border-0"
+                                onclick="confirmarEliminar(@cat.Id, '@cat.Nombre')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-md-3 col-sm-6">
+            <div class="category-card add-category-btn h-100 shadow-sm"
+                 data-bs-toggle="modal" data-bs-target="#modalCategoria"
+                 data-tipo="Ingreso">
+                <i class="fas fa-plus-circle fa-3x mb-3"></i>
+                <h5 class="fw-bold">Nueva</h5>
+                <p class="small">Agregar ingreso</p>
             </div>
         </div>
     </div>
 </div>
 
+@* Modal Crear *@
 <div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header border-bottom-0">
-                <h5 class="modal-title fw-bold">Crear categoría</h5>
+            <div class="modal-header border-bottom-0" id="modalCrearHeader">
+                <h5 class="modal-title fw-bold" id="modalCrearTitulo">Crear categoría</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form>
+            @using (Html.BeginForm("CrearCategoria", "Datos", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Tipo" id="tipoNuevaCategoria" value="Gasto" />
+                <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Nombre de la categoría</label>
-                        <input type="text" class="form-control" placeholder="Ej: Salud, Gimnasio...">
+                        <input type="text" name="Nombre" class="form-control" placeholder="Ej: Salud, Gimnasio..." required />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Selecciona un icono</label>
-                        <div class="d-flex gap-3 fs-3 text-muted">
-                            <i class="fas fa-shopping-bag p-2 border rounded cursor-pointer"></i>
-                            <i class="fas fa-heartbeat p-2 border rounded cursor-pointer"></i>
-                            <i class="fas fa-graduation-cap p-2 border rounded cursor-pointer"></i>
-                            <i class="fas fa-home p-2 border rounded cursor-pointer"></i>
+                        <input type="hidden" name="Icono" id="iconoSeleccionado" value="fa-tag" />
+                        <div class="d-flex gap-3 fs-3 text-muted flex-wrap">
+                            <i class="fas fa-utensils p-2 border rounded icono-opcion" data-icono="fa-utensils" title="Comida"></i>
+                            <i class="fas fa-car p-2 border rounded icono-opcion" data-icono="fa-car" title="Transporte"></i>
+                            <i class="fas fa-gamepad p-2 border rounded icono-opcion" data-icono="fa-gamepad" title="Ocio"></i>
+                            <i class="fas fa-shopping-bag p-2 border rounded icono-opcion" data-icono="fa-shopping-bag" title="Compras"></i>
+                            <i class="fas fa-heartbeat p-2 border rounded icono-opcion" data-icono="fa-heartbeat" title="Salud"></i>
+                            <i class="fas fa-graduation-cap p-2 border rounded icono-opcion" data-icono="fa-graduation-cap" title="Educación"></i>
+                            <i class="fas fa-home p-2 border rounded icono-opcion" data-icono="fa-home" title="Hogar"></i>
+                            <i class="fas fa-money-bill-wave p-2 border rounded icono-opcion" data-icono="fa-money-bill-wave" title="Sueldo"></i>
+                            <i class="fas fa-briefcase p-2 border rounded icono-opcion" data-icono="fa-briefcase" title="Trabajo"></i>
+                            <i class="fas fa-store p-2 border rounded icono-opcion" data-icono="fa-store" title="Negocio"></i>
+                            <i class="fas fa-gift p-2 border rounded icono-opcion" data-icono="fa-gift" title="Regalo"></i>
+                            <i class="fas fa-chart-line p-2 border rounded icono-opcion" data-icono="fa-chart-line" title="Inversión"></i>
+                            <i class="fas fa-tag p-2 border rounded icono-opcion" data-icono="fa-tag" title="Otro"></i>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary px-4">Crear</button>
-            </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary px-4">Crear</button>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+@* Modal Editar *@
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold">Editar categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @using (Html.BeginForm("EditarCategoria", "Datos", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="editId" />
+                    <input type="hidden" name="Tipo" id="editTipo" />
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la categoría</label>
+                        <input type="text" name="Nombre" id="editNombre" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Selecciona un icono</label>
+                        <input type="hidden" name="Icono" id="editIconoSeleccionado" value="fa-tag" />
+                        <div class="d-flex gap-3 fs-3 text-muted flex-wrap">
+                            <i class="fas fa-utensils p-2 border rounded icono-edit" data-icono="fa-utensils" title="Comida"></i>
+                            <i class="fas fa-car p-2 border rounded icono-edit" data-icono="fa-car" title="Transporte"></i>
+                            <i class="fas fa-gamepad p-2 border rounded icono-edit" data-icono="fa-gamepad" title="Ocio"></i>
+                            <i class="fas fa-shopping-bag p-2 border rounded icono-edit" data-icono="fa-shopping-bag" title="Compras"></i>
+                            <i class="fas fa-heartbeat p-2 border rounded icono-edit" data-icono="fa-heartbeat" title="Salud"></i>
+                            <i class="fas fa-graduation-cap p-2 border rounded icono-edit" data-icono="fa-graduation-cap" title="Educación"></i>
+                            <i class="fas fa-home p-2 border rounded icono-edit" data-icono="fa-home" title="Hogar"></i>
+                            <i class="fas fa-money-bill-wave p-2 border rounded icono-edit" data-icono="fa-money-bill-wave" title="Sueldo"></i>
+                            <i class="fas fa-briefcase p-2 border rounded icono-edit" data-icono="fa-briefcase" title="Trabajo"></i>
+                            <i class="fas fa-store p-2 border rounded icono-edit" data-icono="fa-store" title="Negocio"></i>
+                            <i class="fas fa-gift p-2 border rounded icono-edit" data-icono="fa-gift" title="Regalo"></i>
+                            <i class="fas fa-chart-line p-2 border rounded icono-edit" data-icono="fa-chart-line" title="Inversión"></i>
+                            <i class="fas fa-tag p-2 border rounded icono-edit" data-icono="fa-tag" title="Otro"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Eliminar con un solo form reutilizable
+        function confirmarEliminar(id, nombre) {
+            if (confirm('¿Eliminar ' + nombre + '?')) {
+                document.getElementById('eliminarId').value = id;
+                document.getElementById('formEliminar').submit();
+            }
+        }
+
+        // Picker icono - Crear
+        document.querySelectorAll('.icono-opcion').forEach(function (el) {
+            el.addEventListener('click', function () {
+                document.querySelectorAll('.icono-opcion').forEach(function (i) {
+                    i.classList.remove('text-primary', 'border-primary');
+                });
+                el.classList.add('text-primary', 'border-primary');
+                document.getElementById('iconoSeleccionado').value = el.getAttribute('data-icono');
+            });
+        });
+
+        // Picker icono - Editar
+        document.querySelectorAll('.icono-edit').forEach(function (el) {
+            el.addEventListener('click', function () {
+                document.querySelectorAll('.icono-edit').forEach(function (i) {
+                    i.classList.remove('text-primary', 'border-primary');
+                });
+                el.classList.add('text-primary', 'border-primary');
+                document.getElementById('editIconoSeleccionado').value = el.getAttribute('data-icono');
+            });
+        });
+
+        // Modal Crear — saber si es Gasto o Ingreso según el botón que lo abrió
+        document.getElementById('modalCategoria').addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            var tipo = btn ? btn.getAttribute('data-tipo') || 'Gasto' : 'Gasto';
+            document.getElementById('tipoNuevaCategoria').value = tipo;
+            var titulo = tipo === 'Ingreso' ? 'Crear categoría de ingreso' : 'Crear categoría de gasto';
+            document.getElementById('modalCrearTitulo').textContent = titulo;
+        });
+
+        // Modal Editar — rellenar datos
+        document.getElementById('modalEditar').addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            document.getElementById('editId').value    = btn.getAttribute('data-id');
+            document.getElementById('editNombre').value = btn.getAttribute('data-nombre');
+            document.getElementById('editTipo').value  = btn.getAttribute('data-tipo');
+            var icono = btn.getAttribute('data-icono');
+            document.getElementById('editIconoSeleccionado').value = icono;
+            document.querySelectorAll('.icono-edit').forEach(function (i) {
+                i.classList.remove('text-primary', 'border-primary');
+                if (i.getAttribute('data-icono') === icono) {
+                    i.classList.add('text-primary', 'border-primary');
+                }
+            });
+        });
+    </script>
+}
